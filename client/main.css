@@ -1,0 +1,184 @@
+* {
+    font-family: 'Merriweather', serif;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+								  supported by Chrome and Opera */
+}
+body,
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-image: url('/static/background.png');
+    background-size: cover;
+    color: #eee;
+}
+
+h4 {
+    margin: 0;
+}
+
+.overlay {
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    z-index: 10;
+}
+
+.modal {
+    position: absolute;
+    color: #111;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 400px;
+    background: #ddd;
+    border-radius: 30px;
+    padding: 30px;
+    text-align: center;
+}
+
+.content {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    z-index: -10;
+}
+
+input,
+button,
+textarea {
+    border: 5px solid white;
+    -webkit-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1), 0 0 16px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1), 0 0 16px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1), 0 0 16px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.5);
+    margin: 0 0 10px 0;
+}
+
+textarea {
+    overflow: hidden;
+    margin-top: 15px;
+    height: 400px;
+    padding: 5px;
+    width: 250px;
+}
+
+.lobby {
+    display: none;
+}
+
+.room {
+    display: none;
+}
+
+.room-btn {
+    border: 1px solid black;
+}
+
+.game {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1500px;
+    height: 720px;
+    margin: -360px 0 0 -750px;
+}
+.game .name {
+    top: 100px;
+    position: absolute;
+    text-align: center;
+    left: 15px;
+    width: 241.5px;
+}
+.game .title {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 0;
+}
+
+.game .next {
+    position: absolute;
+    left: 275px;
+    top: 145px;
+}
+
+.game .hold {
+    position: absolute;
+    left: 275px;
+    top: 250px;
+}
+
+.game .playerStatus {
+    padding: 20px;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.game .leaveRoom {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-right: 20px;
+    margin-top: 20px;
+}
+
+.game .names {
+    width: 563px;
+    position: absolute;
+    left: 0;
+    margin: auto;
+    right: 0;
+    display: table; /* for the weird whitespace wrap */
+}
+
+.game .names.row1 {
+    top: 70px;
+}
+
+.game .names.row2 {
+    top: calc(360px + 70px);
+}
+
+.game .names * {
+    width: 25%;
+    display: inline-block;
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+tr {
+    border: 1px solid black;
+}
+
+td,
+th {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+tr:hover {
+    cursor: pointer;
+    background: #ccc;
+}

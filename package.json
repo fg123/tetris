@@ -1,0 +1,25 @@
+{
+    "name": "tetris",
+    "version": "1.0.0",
+    "description": "Multiplayer nodejs tetris game",
+    "scripts": {
+        "dev": "nodemon server/index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wheel-org/tetris.git"
+    },
+    "author": "",
+    "dependencies": {
+        "express": "^4.15.4",
+        "nodemon": "^1.17.5",
+        "socket.io": "^2.0.3",
+        "uuid": "^3.2.1"
+    },
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/wheel-org/tetris/issues"
+    },
+    "homepage": "https://github.com/wheel-org/tetris#readme"
+}

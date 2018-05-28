@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<title>Tetris</title>
+	<link rel="stylesheet" href="/client/main.css" />
+	<link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet" />
+
+</head>
+
+<body>
+	<div class="overlay">
+		<div class="modal">
+			<div class="welcome">
+				<h1>Welcome to Tetris (with friends)</h1>
+				<h2>Enter your name</h2>
+				<input type="text" name="username" id="nameInput" value="Hello">
+				<button id="startBtn">
+					<b>Proceed</b>
+				</button>
+			</div>
+			<div class="room">
+				<div class="roomInfo">
+
+				</div>
+				<button class="startGame">Start Game</button>
+				<button class="leaveRoom">Leave Room</button>
+			</div>
+		</div>
+	</div>
+	<div class="game">
+		<canvas id="canvas">
+		</canvas>
+		<div class="title">
+			<h1>Tetris</h1>
+		</div>
+		<div class="next">Next</div>
+		<div class="hold">Hold</div>
+		<div class="name">Your Name</div>
+		<div class="names row1">
+			<div class="1">Name 1</div>
+			<div class="2">Name 2</div>
+			<div class="3">Name 3</div>
+			<div class="4">Name 4</div>
+		</div>
+		<div class="names row2">
+			<div class="5">Name 5</div>
+			<div class="6">Name 6</div>
+			<div class="7">Name 7</div>
+			<div class="8">Name 8</div>
+		</div>
+		<div class="playerStatus">
+			<h4>You are Spectating</h4>
+			<textarea class="log" disabled></textarea>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="id.js"></script>
+	<script type="text/javascript" src="/client/util.js"></script>
+	<script type="text/javascript" src="/client/classes.js"></script>
+	<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="/client/game.js"></script>
+	<script type="text/javascript" src="/client/socket.js"></script>
+	<script type="text/javascript" src="/client/input.js"></script>
+	<script type="text/javascript" src="/client/resources.js"></script>
+	<script type="text/javascript" src="/client/graphics.js"></script>
+</body>
+
+</html>
