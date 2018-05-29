@@ -55,7 +55,7 @@ class Game {
 
         let rowsCleared = 0;
         for (let row = GAME_ROWS - 1; row >= 0; row--) {
-            if (this.board[row].every(x => x !== 0)) {
+            if (this.board[row].every(x => !this.isFreeBlock(x))) {
                 this.board.splice(row, 1);
                 this.board.unshift(Array.from(Array(GAME_COLS), () => 0));
                 // Shift pointer back down
@@ -93,7 +93,7 @@ class Game {
 	checkLosingCondition() {
 		// Any block in the top 2 counts as a losing position
 		for (let row = 0; row < 2; row++) {
-			if (this.board[row].some(x => x !== 0)) {
+			if (this.board[row].some(x => !this.isFreeBlock(x))) {
 				this.lose();
 				return;
 			}
@@ -102,7 +102,7 @@ class Game {
 
     addLines(lines) {
         for (let i = 0; i < lines; i++) {
-            const newRow = Array.from(Array(GAME_COLS), () => 7);
+            const newRow = Array.from(Array(GAME_COLS), () => 8);
             newRow[~~(newRow.length * Math.random())] = 0;
             this.board.push(newRow);
             this.board.shift();
@@ -119,12 +119,16 @@ class Game {
         }
     }
 
+	isFreeBlock(block) {
+		// Empty or ghost
+		return block == 0 || block == 9;
+	}
+
     isCollidingOrOutOfBounds(col, row) {
-        return col < 0 || row < 0 || col >= GAME_COLS || row >= GAME_ROWS || this.board[row][col] != 0;
+        return col < 0 || row < 0 || col >= GAME_COLS || row >= GAME_ROWS || !this.isFreeBlock(this.board[row][col]);
     }
 
-    isValidState(newXOffset, newYOffset, newRotation) {
-        const piece = this.getCurrentPiece();
+    isValidState(piece, newXOffset, newYOffset, newRotation) {
         const rotationalMatrix = piece.rotationalMatrix;
         const rotation = rotationalMatrix[newRotation % rotationalMatrix.length];
         for (let i = 0; i < 4; i++) {
@@ -137,8 +141,14 @@ class Game {
         return true;
     }
 
+	getGhostY() {
+		let tmpY = this.currentPieceYOffset;
+		while(this.isValidState(this.getCurrentPiece(), this.currentPieceXOffset, tmpY, this.rotation)) tmpY += 1;
+		return tmpY - 1;
+	}
+
     left() {
-        if (this.isValidState(this.currentPieceXOffset - 1, this.currentPieceYOffset, this.rotation)) {
+        if (this.isValidState(this.getCurrentPiece(), this.currentPieceXOffset - 1, this.currentPieceYOffset, this.rotation)) {
             this.currentPieceXOffset -= 1;
             return true;
         }
@@ -146,7 +156,7 @@ class Game {
     }
 
     right() {
-        if (this.isValidState(this.currentPieceXOffset + 1, this.currentPieceYOffset, this.rotation)) {
+        if (this.isValidState(this.getCurrentPiece(), this.currentPieceXOffset + 1, this.currentPieceYOffset, this.rotation)) {
             this.currentPieceXOffset += 1;
             return true;
         }
@@ -154,7 +164,7 @@ class Game {
     }
 
     down() {
-        if (this.isValidState(this.currentPieceXOffset, this.currentPieceYOffset + 1, this.rotation)) {
+        if (this.isValidState(this.getCurrentPiece(), this.currentPieceXOffset, this.currentPieceYOffset + 1, this.rotation)) {
             this.currentPieceYOffset += 1;
             return true;
         }
@@ -162,7 +172,7 @@ class Game {
     }
 
     rotate() {
-        if (this.isValidState(this.currentPieceXOffset, this.currentPieceYOffset, this.rotation + 1)) {
+        if (this.isValidState(this.getCurrentPiece(), this.currentPieceXOffset, this.currentPieceYOffset, this.rotation + 1)) {
             this.rotation += 1;
             return true;
         }

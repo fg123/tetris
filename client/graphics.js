@@ -137,6 +137,25 @@ function drawGame() {
             }
         }
 
+        // Draw Ghost Block
+        const ghostYOffset = game.getGhostY();
+        if (ghostYOffset !== game.currentPieceYOffset) {
+            for (let i = 0; i < 4; i++) {
+                const block = piece.startPosition[i];
+                // Apply Rotational and Transformational Offset
+                const x = block[0] + rotation[i][0] + game.currentPieceXOffset;
+                const y = block[1] + rotation[i][1] + ghostYOffset;
+                if (y >= 2) {
+                    drawBlock(
+                        8, // Ghost Block ID
+                        15 + (2 + 32 * x) * MAIN_GAME_SCALE,
+                        offset + 15 + (2 + 32 * (y - 2)) * MAIN_GAME_SCALE,
+                        MAIN_GAME_SCALE
+                    );
+                }
+            }
+        }
+
         const sidebarXOffset = resourceGrid.width * MAIN_GAME_SCALE - 40;
         if (game.upcoming.length !== 0) {
             drawPiece(game, game.upcoming[0], sidebarXOffset, offset + 60, MAIN_GAME_SCALE);
