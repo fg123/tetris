@@ -4,7 +4,7 @@ const GAME_ROWS = 20;
 module.exports = class Player {
     static get State() {
         return {
-            SPECTATOR: 'spectator',
+            SPECTATING: 'spectating',
             QUEUED: 'queued',
             PLAYING: 'playing'
             // TODO(felixguo): Add more here for post game
@@ -14,7 +14,7 @@ module.exports = class Player {
     constructor(socket, name, room) {
         this.socket = socket;
         this.name = name;
-        this.state = Player.State.QUEUED;
+        this.state = Player.State.SPECTATING;
         this.room = room;
         this.board = Array.from(Array(GAME_ROWS), () => Array.from(Array(GAME_COLS), () => 0));
     }

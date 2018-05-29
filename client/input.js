@@ -42,6 +42,14 @@ $(document).ready(function() {
     $(document).mousedown(function(e) {});
     $(document).mousemove(function(e) {});
     $(document).mouseup(function(e) {});
+
+    $('.cta').click(function(e) {
+        spectatorState.onCtaButtonClick(game.name);
+    });
+
+    $('.start.button').click(function(e) {
+        spectatorState.onStartButtonClicked(game.name);
+    });
 });
 
 setInterval(update, TIME_BETWEEN_FRAMES);

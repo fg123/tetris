@@ -59,11 +59,35 @@ io.on('connection', function(socket) {
         rooms[data.room].pushSpectatorState();
         players[socket.id] = player;
     });
+
     socket.on('server.board', function(data) {
         // Do validation!?
         players[socket.id].board = data.board;
         rooms[data.room].pushSpectatorState();
     });
+
+    socket.on('server.linesCleared', function(data) {
+        if (data.lines > 1) {
+            rooms[data.room].giveLinesToRandomPlayer(players[socket.id].name, data.lines - 1);
+        }
+    });
+
+    socket.on('server.queue', function(data) {
+        if (!rooms[data.room].queue(players[socket.id].name)) {
+            socket.emit('client.error', { error: 'Already 8 players!' });
+        }
+    });
+
+    socket.on('server.unqueue', function(data) {
+        rooms[data.room].unqueue(players[socket.id].name);
+    });
+
+    socket.on('server.start', function(data) {
+        if (rooms[data.room].getAdmin() == players[socket.id].name) {
+            rooms[data.room].startGame();
+        }
+    });
+
     socket.on('disconnect', function() {
         if (players[socket.id] !== undefined) {
             removePlayerFromRoom(players[socket.id]);

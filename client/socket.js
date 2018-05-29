@@ -1,10 +1,12 @@
 let socket;
-let spectatorState = undefined;
+let spectatorState = new SpectatorState();
 let name = undefined;
 
 showWelcome();
 
 function emit(endpoint, data) {
+    if (!data) data = {};
+    console.log('Emitting ' + endpoint);
     data.room = roomId;
     socket.emit(endpoint, data);
 }
@@ -48,7 +50,19 @@ function setupSocket() {
 
     socket.on('client.spectator', function(data) {
         console.log(data);
-        spectatorState = data;
+        spectatorState.updateSpectatorState(data);
+        $('.roomStatus').html(spectatorState.getStatusDisplay());
+        $('.title h1').text(spectatorState.getTitleText());
+        $('.cta').text(spectatorState.getCtaButtonText(game.name));
+        if (spectatorState.shouldShowStartbutton(game.name)) {
+            $('.start.button').show();
+        } else {
+            $('.start.button').hide();
+        }
+    });
+
+    socket.on('client.startGame', function(data) {
+        game.inGame = true;
     });
 
     // set showingGame to true when starting
@@ -57,42 +71,9 @@ function setupSocket() {
         alert(data.error);
     });
 
-    socket.on('client.roomCreated', function(room) {
-        loadRoom(room);
+    socket.on('client.gotLines', function(lines) {
+        game.addLines(lines);
     });
-
-    socket.on('client.newPlayer', function(name) {
-        loadRoom(room);
-    });
-
-    socket.on('client.receiveShot', function(cueDx, cueDy) {
-        ballHasBeenShot(cueDx, cueDy);
-    });
-
-    socket.on('client.errorMsg', function(message) {
-        alert(message);
-    });
-
-    socket.on('client.gameStart', function() {});
-}
-
-function loadRoom(room) {
-    showRoom();
-    var playerList = room.players.reduce(function(acc, curr) {
-        return '<li>' + curr + '</li>';
-    }, '');
-
-    var spectatorList = room.spectators.reduce(function(acc, curr) {
-        return '<li>' + curr + '</li>';
-    }, '');
-
-    $('.roomInfo').html(`
-		<p>Id: ${room.id}</p>
-		<p>Players</p>
-		<ul>${playerList}</ul>
-		<p>Spectators</p>
-		<ul>${spectatorList}</ul>
-	`);
 }
 
 function log(message) {

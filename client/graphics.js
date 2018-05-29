@@ -151,7 +151,7 @@ function drawSpectator() {
     const height = resourceGrid.height * SPECTATOR_GAME_SCALE;
     const xBaseOffset = (MAX_WIDTH - (width * 4 + 60)) / 2;
     const yOffsets = [MAX_HEIGHT / 2 - height - 20, MAX_HEIGHT - height - 20];
-    const playersToDraw = spectatorState.inGame.filter(player => player.name != game.name);
+    const playersToDraw = spectatorState.getPlayersInGame().filter(player => player.name != game.name);
     let i = 0;
     for (i = 0; i < playersToDraw.length; i++) {
         const player = playersToDraw[i];

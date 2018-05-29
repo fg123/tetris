@@ -9,7 +9,7 @@ class Game {
         /* The client holds the next n (probably 5) pieces, each time a block is placed, the client sends a message to the server, who will give it the next upcoming piece(s) */
         this.upcoming = [];
         this.name = undefined;
-        this.inGame = true;
+        this.inGame = false;
     }
 
     hold() {
@@ -59,6 +59,10 @@ class Game {
                 rowsCleared++;
             }
         }
+        // TODO(anyone): Probably not a good idea for the client to send this,
+        // might want the server to validate based on the last received state
+        // from the client
+        emit('server.linesCleared', { lines: rowsCleared });
     }
 
     getBoardStateWithCurrentPiece() {
@@ -76,11 +80,32 @@ class Game {
         return newBoard;
     }
 
-    tick() {
-        if (!this.down()) {
-            this.settle();
+    lose() {
+        // TODO(anyone): Implement
+    }
+
+    start() {
+        reset();
+        this.inGame = true;
+    }
+
+    addLines(lines) {
+        for (let i = 0; i < lines; i++) {
+            const newRow = Array.from(Array(GAME_COLS), () => 7);
+            newRow[~~(newRow.length * Math.random())] = 0;
+            this.board.push(newRow);
+            this.board.shift();
+            // TODO(anyone): Check for losing here
         }
-        emit('server.board', { board: this.getBoardStateWithCurrentPiece() });
+    }
+
+    tick() {
+        if (this.inGame) {
+            if (!this.down()) {
+                this.settle();
+            }
+            emit('server.board', { board: this.getBoardStateWithCurrentPiece() });
+        }
     }
 
     isCollidingOrOutOfBounds(col, row) {
@@ -234,5 +259,96 @@ class Piece {
         this.name = name;
         this.startPosition = startPosition;
         this.rotationalMatrix = rotationalMatrix;
+    }
+}
+
+class SpectatorState {
+    constructor() {
+        this.spectatorState = undefined;
+    }
+
+    updateSpectatorState(newState) {
+        this.spectatorState = newState;
+    }
+
+    getStatusDisplay() {
+        if (!this.spectatorState) return '';
+        if (this.spectatorState.players.length === 0) return '';
+        return `
+			<b>Admin:</b> ${this.spectatorState.players[0].name}
+			<br>
+			<b>Playing:</b>
+			<br>
+			${this.getPlayersInGame()
+                .map(p => p.name)
+                .join('<br>')}
+			<br>
+			<b>Queued:</b>
+			<br>
+			${this.getPlayersQueued()
+                .map(p => p.name)
+                .join('<br>')}
+			<br>
+			<b>Spectating:</b>
+			<br>
+			${this.getPlayersSpectating()
+                .map(p => p.name)
+                .join('<br>')}
+			<br>
+		`;
+    }
+
+    getPlayersQueued() {
+        if (!this.spectatorState) {
+            return [];
+        }
+        return this.spectatorState.players.filter(player => player.state === 'queued');
+    }
+
+    getPlayersSpectating() {
+        if (!this.spectatorState) {
+            return [];
+        }
+        return this.spectatorState.players.filter(player => player.state === 'spectating');
+    }
+
+    getPlayersInGame() {
+        // TODO(anyone): Get constants between server and client to agree
+        if (!this.spectatorState) {
+            return [];
+        }
+        return this.spectatorState.players.filter(player => player.state === 'playing');
+    }
+
+    getTitleText() {
+        if (!this.spectatorState) return 'Tetris';
+        if (this.spectatorState.state === 'lobby') return 'Tetris - Lobby';
+        if (this.spectatorState.state === 'in-game') return 'Tetris - In Game';
+    }
+
+    shouldShowStartbutton(name) {
+        if (!this.spectatorState) return false;
+        if (this.spectatorState.players[0].name !== name) return false;
+        return this.spectatorState.state === 'lobby' && this.getPlayersQueued().length >= 2;
+    }
+
+    getCtaButtonText(name) {
+        if (!this.spectatorState) return 'Loading';
+        if (this.getPlayersSpectating().some(p => p.name === name)) return 'Queue for Next Game';
+        if (this.getPlayersQueued().some(p => p.name === name)) return 'Unqueue';
+        return 'In Game';
+    }
+
+    onCtaButtonClick(name) {
+        if (!this.spectatorState) return;
+        if (this.getPlayersSpectating().some(p => p.name === name)) {
+            emit('server.queue');
+        } else if (this.getPlayersQueued().some(p => p.name === name)) {
+            emit('server.unqueue');
+        }
+    }
+
+    onStartButtonClicked(name) {
+        if (this.shouldShowStartbutton(name)) emit('server.start');
     }
 }

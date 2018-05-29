@@ -71,12 +71,13 @@ textarea {
     margin: 0 0 10px 0;
 }
 
-textarea {
-    overflow: hidden;
+.roomStatus {
     margin-top: 15px;
     height: 400px;
     padding: 5px;
-    width: 250px;
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.5);
 }
 
 .lobby {
@@ -91,6 +92,36 @@ textarea {
     border: 1px solid black;
 }
 
+.button {
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.cta {
+    background: #aaaa00;
+    border: inset 10px #cccc00;
+    color: #000;
+}
+
+.cta:hover {
+    background: #cccc00;
+    border-color: #dddd00;
+}
+
+.start {
+    background: #008800;
+    border: inset 10px #00aa00;
+}
+
+.start:hover {
+    background: #00aa00;
+    border-color: #00cc00;
+}
+
 .game {
     position: absolute;
     top: 50%;
@@ -99,6 +130,7 @@ textarea {
     height: 720px;
     margin: -360px 0 0 -750px;
 }
+
 .game .name {
     top: 100px;
     position: absolute;
@@ -106,6 +138,7 @@ textarea {
     left: 15px;
     width: 241.5px;
 }
+
 .game .title {
     position: absolute;
     width: 100%;
@@ -128,8 +161,10 @@ textarea {
 .game .playerStatus {
     padding: 20px;
     position: absolute;
-    top: 0;
+    top: 50%;
+    transform: translateY(-50%);
     right: 0;
+    width: 250px;
 }
 
 .game .leaveRoom {

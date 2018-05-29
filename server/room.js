@@ -1,7 +1,18 @@
+const Player = require('./player.js');
+
 module.exports = class Room {
+    static get State() {
+        return {
+            LOBBY: 'lobby',
+            IN_GAME: 'in-game'
+        };
+    }
+
     constructor(id) {
         this.id = id;
         this.players = [];
+        this.state = Room.State.LOBBY;
+        this.admin = undefined;
     }
 
     addPlayer(player) {
@@ -30,12 +41,55 @@ module.exports = class Room {
         });
     }
 
+    giveLinesToRandomPlayer(senderName, lines) {
+        const playersNotSender = this.players.filter(it => it.name !== senderName);
+        playersNotSender[~~(playersNotSender.length * Math.random())].socket.emit('client.gotLines', lines);
+    }
+
+    getAdmin() {
+        return this.players.length === 0 ? undefined : this.players[0].name;
+    }
+
+    startGame() {
+        this.state = Room.State.IN_GAME;
+        this.players.filter(x => x.state === Player.State.QUEUED).forEach(x => {
+            x.state = Player.State.PLAYING;
+            x.socket.emit('client.startGame');
+        });
+
+        this.pushSpectatorState();
+    }
+
+    queue(name) {
+        console.log('Queueing ' + name);
+        if (this.players.filter(x => x.state === Player.State.QUEUED || x.state === Player.State.PLAYING).length >= 8) {
+            return false;
+        }
+        const p = this.players.find(x => x.name === name);
+        if (!p) return false;
+        p.state = Player.State.QUEUED;
+        this.pushSpectatorState();
+        return true;
+    }
+
+    unqueue(name) {
+        console.log('Unqueueing ' + name);
+        const p = this.players.find(x => x.name === name);
+        if (!p) return false;
+        p.state = Player.State.SPECTATING;
+        this.pushSpectatorState();
+        return true;
+    }
+
     getSpectatorState() {
         return {
-            inGame: this.players.map(player => {
+            admin: this.getAdmin(),
+            state: this.state,
+            players: this.players.map(player => {
                 return {
                     name: player.name,
-                    board: player.board
+                    board: player.board,
+                    state: player.state
                 };
             })
         };
