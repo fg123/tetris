@@ -30,7 +30,7 @@ class Game {
     }
 
     settle() {
-        // TODO(anyone): This rotational calculation code appears in 3 places,
+        // TODO(anyone): This rotational calculation code appears in 4 places,
         // we should probably extract it into some function somehow
         const piece = this.getCurrentPiece();
         const rotationalMatrix = piece.rotationalMatrix;
@@ -61,10 +61,26 @@ class Game {
         }
     }
 
+    getBoardStateWithCurrentPiece() {
+        const newBoard = this.board.map(a => a.slice());
+        const piece = this.getCurrentPiece();
+        const rotationalMatrix = piece.rotationalMatrix;
+        const rotation = rotationalMatrix[this.rotation % rotationalMatrix.length];
+        for (let i = 0; i < 4; i++) {
+            const block = piece.startPosition[i];
+            // Apply Rotational and Transformational Offset
+            const x = block[0] + rotation[i][0] + this.currentPieceXOffset;
+            const y = block[1] + rotation[i][1] + this.currentPieceYOffset;
+            newBoard[y][x] = this.currentPiece + 1;
+        }
+        return newBoard;
+    }
+
     tick() {
         if (!this.down()) {
             this.settle();
         }
+        emit('server.board', { board: this.getBoardStateWithCurrentPiece() });
     }
 
     isCollidingOrOutOfBounds(col, row) {

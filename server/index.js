@@ -59,7 +59,11 @@ io.on('connection', function(socket) {
         rooms[data.room].pushSpectatorState();
         players[socket.id] = player;
     });
-
+    socket.on('server.board', function(data) {
+        // Do validation!?
+        players[socket.id].board = data.board;
+        rooms[data.room].pushSpectatorState();
+    });
     socket.on('disconnect', function() {
         if (players[socket.id] !== undefined) {
             removePlayerFromRoom(players[socket.id]);
