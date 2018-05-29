@@ -54,6 +54,7 @@ function setupSocket() {
         $('.roomStatus').html(spectatorState.getStatusDisplay());
         $('.title h1').text(spectatorState.getTitleText());
         $('.cta').text(spectatorState.getCtaButtonText(game.name));
+        $('.playerStatus h4').text(spectatorState.getStatusText(game.name));
         if (spectatorState.shouldShowStartbutton(game.name)) {
             $('.start.button').show();
         } else {
@@ -61,8 +62,16 @@ function setupSocket() {
         }
     });
 
+    socket.on('client.gameOver', function(name) {
+        game.inGame = false;
+        alert(name + ' has won the match!');
+    });
+
     socket.on('client.startGame', function(data) {
-        game.inGame = true;
+        // TODO(anyone): Maybe have the server pass the upcoming array
+        const upcoming = [];
+        for (let i = 0; i < 1000; i++) upcoming.push(Math.floor(Math.random() * 7));
+        game.start(upcoming.shift(), upcoming);
     });
 
     // set showingGame to true when starting

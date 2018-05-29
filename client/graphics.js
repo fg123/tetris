@@ -118,30 +118,31 @@ function drawGame() {
     const resourceGrid = resources[RESOURCE_GRID];
     const offset = (MAX_HEIGHT - resourceGrid.height * MAIN_GAME_SCALE) / 2;
     drawTetris(game.board, MAIN_GAME_SCALE, 15, offset + 15);
-    // Also draw the currently falling piece
-    const piece = game.getCurrentPiece();
-    const rotationalMatrix = piece.rotationalMatrix;
-    const rotation = rotationalMatrix[game.rotation % rotationalMatrix.length];
-    for (let i = 0; i < 4; i++) {
-        const block = piece.startPosition[i];
-        // Apply Rotational and Transformational Offset
-        const x = block[0] + rotation[i][0] + game.currentPieceXOffset;
-        const y = block[1] + rotation[i][1] + game.currentPieceYOffset;
-        if (y >= 2) {
-            drawBlock(
-                game.currentPiece,
-                15 + (2 + 32 * x) * MAIN_GAME_SCALE,
-                offset + 15 + (2 + 32 * (y - 2)) * MAIN_GAME_SCALE,
-                MAIN_GAME_SCALE
-            );
+    if (game.inGame) {
+        const piece = game.getCurrentPiece();
+        const rotationalMatrix = piece.rotationalMatrix;
+        const rotation = rotationalMatrix[game.rotation % rotationalMatrix.length];
+        for (let i = 0; i < 4; i++) {
+            const block = piece.startPosition[i];
+            // Apply Rotational and Transformational Offset
+            const x = block[0] + rotation[i][0] + game.currentPieceXOffset;
+            const y = block[1] + rotation[i][1] + game.currentPieceYOffset;
+            if (y >= 2) {
+                drawBlock(
+                    game.currentPiece,
+                    15 + (2 + 32 * x) * MAIN_GAME_SCALE,
+                    offset + 15 + (2 + 32 * (y - 2)) * MAIN_GAME_SCALE,
+                    MAIN_GAME_SCALE
+                );
+            }
         }
-    }
 
-    const sidebarXOffset = resourceGrid.width * MAIN_GAME_SCALE - 40;
-    if (game.upcoming.length !== 0) {
-        drawPiece(game, game.upcoming[0], sidebarXOffset, offset + 60, MAIN_GAME_SCALE);
+        const sidebarXOffset = resourceGrid.width * MAIN_GAME_SCALE - 40;
+        if (game.upcoming.length !== 0) {
+            drawPiece(game, game.upcoming[0], sidebarXOffset, offset + 60, MAIN_GAME_SCALE);
+        }
+        drawPiece(game, game.holdingPiece, sidebarXOffset, offset + 150, MAIN_GAME_SCALE);
     }
-    drawPiece(game, game.holdingPiece, sidebarXOffset, offset + 150, MAIN_GAME_SCALE);
 }
 
 function drawSpectator() {
@@ -155,7 +156,13 @@ function drawSpectator() {
     let i = 0;
     for (i = 0; i < playersToDraw.length; i++) {
         const player = playersToDraw[i];
-        $('.names .' + (i + 1)).text(player.name);
+        let name = player.name;
+        // TODO(anyone): Shared constants between server / client?
+        if (player.state === 'lost') {
+            name += ' (Lost!)';
+        }
+        $('.names .' + (i + 1)).text(name);
+        // TODO(anyone): Draw tetris spectator in grayscale
         drawTetris(
             player.board,
             SPECTATOR_GAME_SCALE,

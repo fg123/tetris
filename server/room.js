@@ -54,10 +54,29 @@ module.exports = class Room {
         this.state = Room.State.IN_GAME;
         this.players.filter(x => x.state === Player.State.QUEUED).forEach(x => {
             x.state = Player.State.PLAYING;
+            x.resetBoard();
             x.socket.emit('client.startGame');
         });
-
         this.pushSpectatorState();
+    }
+
+    onPlayerLose() {
+        const stillPlaying = this.players.filter(x => x.state === Player.State.PLAYING);
+        if (stillPlaying.length === 1) {
+            this.players.forEach(player => {
+                // TODO(felixguo): Push post game stats
+                player.socket.emit('client.gameOver', stillPlaying[0].name);
+            });
+        }
+        if (stillPlaying.length <= 1) {
+            // Requeue all playing players
+            this.state = Room.State.LOBBY;
+            this.players.filter(x => x.state === Player.State.PLAYING || x.state === Player.State.LOST).forEach(x => {
+                console.log(x.name + " has been requeued.");
+                x.state = Player.State.QUEUED;
+            });
+            this.pushSpectatorState();   
+        }
     }
 
     queue(name) {

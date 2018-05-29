@@ -75,6 +75,12 @@ io.on('connection', function(socket) {
         }
     });
 
+    socket.on('server.lose', function(data) {
+        players[socket.id].state = Player.State.LOST;
+        rooms[data.room].pushSpectatorState();
+        rooms[data.room].onPlayerLose();
+    });
+
     socket.on('server.queue', function(data) {
         if (!rooms[data.room].queue(players[socket.id].name)) {
             socket.emit('client.error', { error: 'Already 8 players!' });

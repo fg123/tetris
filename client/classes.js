@@ -1,10 +1,10 @@
 class Game {
     constructor() {
-        this.board = Array.from(Array(GAME_ROWS), () => Array.from(Array(GAME_COLS), () => 0));
+		this.resetBoard();
         this.currentPiece = -1;
         this.holdingPiece = 0;
 
-        this.reset();
+        this.resetPiece();
 
         /* The client holds the next n (probably 5) pieces, each time a block is placed, the client sends a message to the server, who will give it the next upcoming piece(s) */
         this.upcoming = [];
@@ -14,7 +14,7 @@ class Game {
 
     hold() {
         if (!this.hasHold) {
-            this.reset();
+            this.resetPiece();
             this.hasHold = true;
             const tmp = this.holdingPiece;
             this.holdingPiece = this.currentPiece;
@@ -22,7 +22,11 @@ class Game {
         }
     }
 
-    reset() {
+	resetBoard() {
+		this.board = Array.from(Array(GAME_ROWS), () => Array.from(Array(GAME_COLS), () => 0));
+	}
+
+    resetPiece() {
         this.currentPieceYOffset = 0;
         this.currentPieceXOffset = 0;
         this.rotation = 0;
@@ -45,7 +49,7 @@ class Game {
             // +1 because currentPiece is indexed on 0
             this.board[y][x] = this.currentPiece + 1;
         }
-        this.reset();
+        this.resetPiece();
         // TODO(anyone): Add check if no more upcoming
         this.currentPiece = this.upcoming.shift();
 
@@ -62,7 +66,8 @@ class Game {
         // TODO(anyone): Probably not a good idea for the client to send this,
         // might want the server to validate based on the last received state
         // from the client
-        emit('server.linesCleared', { lines: rowsCleared });
+		emit('server.linesCleared', { lines: rowsCleared });
+		this.checkLosingCondition();
     }
 
     getBoardStateWithCurrentPiece() {
@@ -81,13 +86,19 @@ class Game {
     }
 
     lose() {
-        // TODO(anyone): Implement
+		this.inGame = false;
+		emit('server.lose');
     }
 
-    start() {
-        reset();
-        this.inGame = true;
-    }
+	checkLosingCondition() {
+		// Any block in the top 2 counts as a losing position
+		for (let row = 0; row < 2; row++) {
+			if (this.board[row].some(x => x !== 0)) {
+				this.lose();
+				return;
+			}
+		}
+	}
 
     addLines(lines) {
         for (let i = 0; i < lines; i++) {
@@ -95,7 +106,7 @@ class Game {
             newRow[~~(newRow.length * Math.random())] = 0;
             this.board.push(newRow);
             this.board.shift();
-            // TODO(anyone): Check for losing here
+            this.checkLosingCondition();
         }
     }
 
@@ -166,8 +177,9 @@ class Game {
     start(firstPieceIndex, upcoming) {
         this.currentPiece = firstPieceIndex;
         this.updateUpcoming(upcoming);
-        this.currentPieceYOffset = 0;
-        this.currentPieceXOffset = 0;
+		this.resetPiece();
+		this.resetBoard();
+		this.inGame = true;
     }
 
     updateUpcoming(newUpcoming) {
@@ -317,7 +329,7 @@ class SpectatorState {
         if (!this.spectatorState) {
             return [];
         }
-        return this.spectatorState.players.filter(player => player.state === 'playing');
+        return this.spectatorState.players.filter(player => player.state === 'playing' || player.state === 'lost');
     }
 
     getTitleText() {
@@ -346,7 +358,14 @@ class SpectatorState {
         } else if (this.getPlayersQueued().some(p => p.name === name)) {
             emit('server.unqueue');
         }
-    }
+	}
+	
+	getStatusText(name) {
+		if (!this.spectatorState) return 'Loading...';
+		if (this.getPlayersSpectating().some(p => p.name === name)) return 'You are Spectating';
+		if (this.getPlayersQueued().some(p => p.name === name)) return 'You are Queued for Next Game';
+		return 'You are in game!'
+	}
 
     onStartButtonClicked(name) {
         if (this.shouldShowStartbutton(name)) emit('server.start');

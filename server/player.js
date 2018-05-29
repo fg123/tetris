@@ -6,8 +6,8 @@ module.exports = class Player {
         return {
             SPECTATING: 'spectating',
             QUEUED: 'queued',
-            PLAYING: 'playing'
-            // TODO(felixguo): Add more here for post game
+            PLAYING: 'playing',
+            LOST: 'lost',
         };
     }
 
@@ -16,6 +16,10 @@ module.exports = class Player {
         this.name = name;
         this.state = Player.State.SPECTATING;
         this.room = room;
+        this.resetBoard();
+    }
+    
+    resetBoard() {
         this.board = Array.from(Array(GAME_ROWS), () => Array.from(Array(GAME_COLS), () => 0));
     }
 };
