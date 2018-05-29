@@ -49,6 +49,9 @@ io.on('connection', function(socket) {
     console.log('Connected');
     socket.on('server.join', function(data) {
         // Check for Limits here if necessary
+        if (!rooms[data.room]) {
+            rooms[data.room] = new Room(data.room);
+        }
         if (rooms[data.room].players.contains(it => it.name == data.name)) {
             socket.emit('client.error', { error: 'Name is already taken!' });
             return;
