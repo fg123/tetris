@@ -160,7 +160,7 @@ function drawGame() {
         if (game.upcoming.length !== 0) {
             drawPiece(game, game.upcoming[0], sidebarXOffset, offset + 60, MAIN_GAME_SCALE);
         }
-        drawPiece(game, game.holdingPiece, sidebarXOffset, offset + 150, MAIN_GAME_SCALE);
+        drawPiece(game, game.holdingPiece, sidebarXOffset, offset + 160, MAIN_GAME_SCALE);
     }
 }
 

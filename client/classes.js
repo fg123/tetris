@@ -2,7 +2,7 @@ class Game {
     constructor() {
 		this.resetBoard();
         this.currentPiece = -1;
-        this.holdingPiece = 0;
+        this.holdingPiece = undefined;
 
         this.resetPiece();
 
@@ -17,8 +17,13 @@ class Game {
             this.resetPiece();
             this.hasHold = true;
             const tmp = this.holdingPiece;
-            this.holdingPiece = this.currentPiece;
-            this.currentPiece = tmp;
+			this.holdingPiece = this.currentPiece;
+			if (tmp) {
+				this.currentPiece = tmp;
+			}
+			else {
+				this.currentPiece = this.upcoming.shift();
+			}
         }
     }
 

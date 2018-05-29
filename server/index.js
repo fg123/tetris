@@ -111,7 +111,8 @@ function removePlayerFromRoom(player) {
         // Remove room if it's empty
         delete rooms[room.id];
     } else {
-        // Notify rest of players someone left
+        // Notify rest of players someone left (as if they lost)
+        rooms[data.room].onPlayerLose();
         room.pushSpectatorState();
     }
 }
