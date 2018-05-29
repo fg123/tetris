@@ -5,6 +5,8 @@ const GAME_ROWS = 22;
 
 const game = new Game();
 
-game.start(0, [5, 3, 1, 2, 3, 3, 2, 4]);
+const upcoming = [];
+for (let i = 0; i < 1000; i++) upcoming.push(Math.floor(Math.random() * 7));
+game.start(upcoming.shift(), upcoming);
 console.log(game.board);
 console.log(Game.blockList);

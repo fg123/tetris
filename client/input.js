@@ -1,18 +1,44 @@
-var TIME_BETWEEN_FRAMES = 1;
-var DELTA_TIME = 1000 / TIME_BETWEEN_FRAMES;
-var PREV_TIME = Date.now();
-var DRAG = 0.995;
-var BALL_RADIUS = 2.8575;
-var MAX_CUE_BALL_VEL = 5;
+const TIME_BETWEEN_FRAMES = 16;
+const TETRIS_FRAME_TIME = 500;
+const KEY_LEFT = 37;
+const KEY_UP = 38;
+const KEY_RIGHT = 39;
+const KEY_DOWN = 40;
+const KEY_SPACE = 32;
+const KEY_SHIFT = 16;
+
+let DELTA_TIME = 1000 / TIME_BETWEEN_FRAMES;
+let PREV_TIME = Date.now();
+
+let cumulativeCounter = 0;
 
 function update() {
-    var now = Date.now();
+    const now = Date.now();
     DELTA_TIME = 1000 / (now - PREV_TIME);
-
+    cumulativeCounter += now - PREV_TIME;
+    if (cumulativeCounter > TETRIS_FRAME_TIME) {
+        cumulativeCounter = 0;
+        game.tick();
+    }
     PREV_TIME = now;
 }
 
 $(document).ready(function() {
+    $(document).keydown(function(e) {
+        if (event.which == KEY_DOWN) {
+            game.down();
+        } else if (event.which == KEY_UP) {
+            game.rotate();
+        } else if (event.which == KEY_LEFT) {
+            game.left();
+        } else if (event.which == KEY_RIGHT) {
+            game.right();
+        } else if (event.which == KEY_SPACE) {
+            game.hardDrop();
+        } else if (event.which == KEY_SHIFT) {
+            game.hold();
+        }
+    });
     $(document).mousedown(function(e) {});
     $(document).mousemove(function(e) {});
     $(document).mouseup(function(e) {});

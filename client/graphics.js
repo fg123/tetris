@@ -101,9 +101,9 @@ function drawTetris(board, scale, x, y) {
     for (let row = 0; row < GAME_ROWS - 2; row++) {
         for (let col = 0; col < GAME_COLS; col++) {
             const block = board[row + 2][col];
-            const block_index = block - 1;
+            const blockIndex = block - 1;
             if (block != 0) {
-                drawBlock(block_index, x + (2 + 32 * col) * scale, y + (2 + 32 * row) * scale, scale);
+                drawBlock(blockIndex, x + (2 + 32 * col) * scale, y + (2 + 32 * row) * scale, scale);
             }
         }
     }
@@ -119,6 +119,23 @@ function drawGame() {
     const offset = (MAX_HEIGHT - resourceGrid.height * MAIN_GAME_SCALE) / 2;
     drawTetris(game.board, MAIN_GAME_SCALE, 15, offset + 15);
     // Also draw the currently falling piece
+    const piece = game.getCurrentPiece();
+    const rotationalMatrix = piece.rotationalMatrix;
+    const rotation = rotationalMatrix[game.rotation % rotationalMatrix.length];
+    for (let i = 0; i < 4; i++) {
+        const block = piece.startPosition[i];
+        // Apply Rotational and Transformational Offset
+        const x = block[0] + rotation[i][0] + game.currentPieceXOffset;
+        const y = block[1] + rotation[i][1] + game.currentPieceYOffset;
+        if (y >= 2) {
+            drawBlock(
+                game.currentPiece,
+                15 + (2 + 32 * x) * MAIN_GAME_SCALE,
+                offset + 15 + (2 + 32 * (y - 2)) * MAIN_GAME_SCALE,
+                MAIN_GAME_SCALE
+            );
+        }
+    }
 
     const sidebarXOffset = resourceGrid.width * MAIN_GAME_SCALE - 40;
     if (game.upcoming.length !== 0) {
@@ -155,6 +172,7 @@ function drawSpectator() {
 function draw() {
     screenWidth = window.innerWidth;
     screenHeight = window.innerHeight;
+    context.clearRect(0, 0, MAX_WIDTH, MAX_HEIGHT);
     drawGame();
     if (spectatorState) drawSpectator();
 }
