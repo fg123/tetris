@@ -1,7 +1,7 @@
 class Game {
     constructor() {
 		this.resetBoard();
-        this.currentPiece = -1;
+        this.currentPiece = undefined;
         this.holdingPiece = undefined;
 
         this.resetPiece();
@@ -217,7 +217,7 @@ class Game {
     }
 
     getPieceByIndex(index) {
-        if (index < 0 || index >= Game.blockList.length) {
+        if (index < 0 || index >= Game.blockList.length || index === undefined) {
             return undefined;
         }
         return Game.blockList[index];
