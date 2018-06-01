@@ -64,7 +64,9 @@ function setupSocket() {
 
     socket.on('client.gameOver', function(name) {
         game.inGame = false;
-        alert(name + ' has won the match!');
+        if (confirm(name + ' has won the match! Requeue?')) {
+            emit('server.queue');
+        }
     });
 
     socket.on('client.startGame', function(data) {

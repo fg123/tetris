@@ -72,10 +72,10 @@ module.exports = class Room {
             // Requeue all playing players
             this.state = Room.State.LOBBY;
             this.players.filter(x => x.state === Player.State.PLAYING || x.state === Player.State.LOST).forEach(x => {
-                console.log(x.name + " has been requeued.");
-                x.state = Player.State.QUEUED;
+                console.log(x.name + ' has been reset.');
+                x.state = Player.State.SPECTATING;
             });
-            this.pushSpectatorState();   
+            this.pushSpectatorState();
         }
     }
 
