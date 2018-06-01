@@ -101,10 +101,11 @@ function drawTetris(board, scale, x, y) {
     for (let row = 0; row < GAME_ROWS - 2; row++) {
         for (let col = 0; col < GAME_COLS; col++) {
             const block = board[row + 2][col];
-            const blockIndex = block - 1;
-            if (block != 0) {
-                drawBlock(blockIndex, x + (2 + 32 * col) * scale, y + (2 + 32 * row) * scale, scale);
+            let blockIndex = block - 1;
+            if (block == 0) {
+                blockIndex = 7; // Grid Background Block
             }
+            drawBlock(blockIndex, x + (2 + 32 * col) * scale, y + (2 + 32 * row) * scale, scale);
         }
     }
 }

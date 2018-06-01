@@ -1,6 +1,6 @@
 class Game {
     constructor() {
-		this.resetBoard();
+        this.resetBoard();
         this.currentPiece = undefined;
         this.holdingPiece = undefined;
 
@@ -17,19 +17,18 @@ class Game {
             this.resetPiece();
             this.hasHold = true;
             const tmp = this.holdingPiece;
-			this.holdingPiece = this.currentPiece;
-			if (tmp) {
-				this.currentPiece = tmp;
-			}
-			else {
-				this.currentPiece = this.upcoming.shift();
-			}
+            this.holdingPiece = this.currentPiece;
+            if (tmp !== undefined) {
+                this.currentPiece = tmp;
+            } else {
+                this.currentPiece = this.upcoming.shift();
+            }
         }
     }
 
-	resetBoard() {
-		this.board = Array.from(Array(GAME_ROWS), () => Array.from(Array(GAME_COLS), () => 0));
-	}
+    resetBoard() {
+        this.board = Array.from(Array(GAME_ROWS), () => Array.from(Array(GAME_COLS), () => 0));
+    }
 
     resetPiece() {
         this.currentPieceYOffset = 0;
@@ -71,8 +70,8 @@ class Game {
         // TODO(anyone): Probably not a good idea for the client to send this,
         // might want the server to validate based on the last received state
         // from the client
-		emit('server.linesCleared', { lines: rowsCleared });
-		this.checkLosingCondition();
+        emit('server.linesCleared', { lines: rowsCleared });
+        this.checkLosingCondition();
     }
 
     getBoardStateWithCurrentPiece() {
@@ -91,19 +90,19 @@ class Game {
     }
 
     lose() {
-		this.inGame = false;
-		emit('server.lose');
+        this.inGame = false;
+        emit('server.lose');
     }
 
-	checkLosingCondition() {
-		// Any block in the top 2 counts as a losing position
-		for (let row = 0; row < 2; row++) {
-			if (this.board[row].some(x => !this.isFreeBlock(x))) {
-				this.lose();
-				return;
-			}
-		}
-	}
+    checkLosingCondition() {
+        // Any block in the top 2 counts as a losing position
+        for (let row = 0; row < 2; row++) {
+            if (this.board[row].some(x => !this.isFreeBlock(x))) {
+                this.lose();
+                return;
+            }
+        }
+    }
 
     addLines(lines) {
         for (let i = 0; i < lines; i++) {
@@ -124,10 +123,10 @@ class Game {
         }
     }
 
-	isFreeBlock(block) {
-		// Empty or ghost
-		return block == 0 || block == 9;
-	}
+    isFreeBlock(block) {
+        // Empty or ghost
+        return block == 0 || block == 9;
+    }
 
     isCollidingOrOutOfBounds(col, row) {
         return col < 0 || row < 0 || col >= GAME_COLS || row >= GAME_ROWS || !this.isFreeBlock(this.board[row][col]);
@@ -146,14 +145,22 @@ class Game {
         return true;
     }
 
-	getGhostY() {
-		let tmpY = this.currentPieceYOffset;
-		while(this.isValidState(this.getCurrentPiece(), this.currentPieceXOffset, tmpY, this.rotation)) tmpY += 1;
-		return tmpY - 1;
-	}
+    getGhostY() {
+        let tmpY = this.currentPieceYOffset;
+        while (this.isValidState(this.getCurrentPiece(), this.currentPieceXOffset, tmpY, this.rotation)) tmpY += 1;
+        return tmpY - 1;
+    }
 
     left() {
-        if (this.isValidState(this.getCurrentPiece(), this.currentPieceXOffset - 1, this.currentPieceYOffset, this.rotation)) {
+        if (!this.inGame) return false;
+        if (
+            this.isValidState(
+                this.getCurrentPiece(),
+                this.currentPieceXOffset - 1,
+                this.currentPieceYOffset,
+                this.rotation
+            )
+        ) {
             this.currentPieceXOffset -= 1;
             return true;
         }
@@ -161,7 +168,15 @@ class Game {
     }
 
     right() {
-        if (this.isValidState(this.getCurrentPiece(), this.currentPieceXOffset + 1, this.currentPieceYOffset, this.rotation)) {
+        if (!this.inGame) return false;
+        if (
+            this.isValidState(
+                this.getCurrentPiece(),
+                this.currentPieceXOffset + 1,
+                this.currentPieceYOffset,
+                this.rotation
+            )
+        ) {
             this.currentPieceXOffset += 1;
             return true;
         }
@@ -169,7 +184,15 @@ class Game {
     }
 
     down() {
-        if (this.isValidState(this.getCurrentPiece(), this.currentPieceXOffset, this.currentPieceYOffset + 1, this.rotation)) {
+        if (!this.inGame) return false;
+        if (
+            this.isValidState(
+                this.getCurrentPiece(),
+                this.currentPieceXOffset,
+                this.currentPieceYOffset + 1,
+                this.rotation
+            )
+        ) {
             this.currentPieceYOffset += 1;
             return true;
         }
@@ -177,7 +200,15 @@ class Game {
     }
 
     rotate() {
-        if (this.isValidState(this.getCurrentPiece(), this.currentPieceXOffset, this.currentPieceYOffset, this.rotation + 1)) {
+        if (!this.inGame) return false;
+        if (
+            this.isValidState(
+                this.getCurrentPiece(),
+                this.currentPieceXOffset,
+                this.currentPieceYOffset,
+                this.rotation + 1
+            )
+        ) {
             this.rotation += 1;
             return true;
         }
@@ -185,6 +216,7 @@ class Game {
     }
 
     hardDrop() {
+        if (!this.inGame) return false;
         while (this.down());
         this.settle();
     }
@@ -192,9 +224,9 @@ class Game {
     start(firstPieceIndex, upcoming) {
         this.currentPiece = firstPieceIndex;
         this.updateUpcoming(upcoming);
-		this.resetPiece();
-		this.resetBoard();
-		this.inGame = true;
+        this.resetPiece();
+        this.resetBoard();
+        this.inGame = true;
     }
 
     updateUpcoming(newUpcoming) {
@@ -373,14 +405,14 @@ class SpectatorState {
         } else if (this.getPlayersQueued().some(p => p.name === name)) {
             emit('server.unqueue');
         }
-	}
-	
-	getStatusText(name) {
-		if (!this.spectatorState) return 'Loading...';
-		if (this.getPlayersSpectating().some(p => p.name === name)) return 'You are Spectating';
-		if (this.getPlayersQueued().some(p => p.name === name)) return 'You are Queued for Next Game';
-		return 'You are in game!'
-	}
+    }
+
+    getStatusText(name) {
+        if (!this.spectatorState) return 'Loading...';
+        if (this.getPlayersSpectating().some(p => p.name === name)) return 'You are Spectating';
+        if (this.getPlayersQueued().some(p => p.name === name)) return 'You are Queued for Next Game';
+        return 'You are in game!';
+    }
 
     onStartButtonClicked(name) {
         if (this.shouldShowStartbutton(name)) emit('server.start');
