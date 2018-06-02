@@ -2,7 +2,6 @@ class Game {
     constructor() {
         this.resetBoard();
         this.currentPiece = undefined;
-        this.holdingPiece = undefined;
 
         this.resetPiece();
 
@@ -30,6 +29,7 @@ class Game {
     resetBoard() {
         this.board = Array.from(Array(GAME_ROWS), () => Array.from(Array(GAME_COLS), () => 0));
         this.hasJustSent = false;
+        this.holdingPiece = undefined;
     }
 
     resetPiece() {
