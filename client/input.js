@@ -11,12 +11,14 @@ let DELTA_TIME = 1000 / TIME_BETWEEN_FRAMES;
 let PREV_TIME = Date.now();
 
 let cumulativeCounter = 0;
+let millisPast = 0;
 
 function update() {
     const now = Date.now();
     DELTA_TIME = 1000 / (now - PREV_TIME);
     cumulativeCounter += now - PREV_TIME;
-    if (cumulativeCounter > TETRIS_FRAME_TIME) {
+    millisPast += now - PREV_TIME;
+    if (cumulativeCounter > Math.max(200, TETRIS_FRAME_TIME - millisPast / 480)) {
         cumulativeCounter = 0;
         game.tick();
     }
