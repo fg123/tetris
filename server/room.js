@@ -42,7 +42,7 @@ module.exports = class Room {
     }
 
     giveLinesToRandomPlayer(senderName, lines) {
-        const playersNotSender = this.players.filter(it => it.name !== senderName);
+        const playersNotSender = this.players.filter(it => it.name !== senderName && it.state === Player.State.PLAYING);
         playersNotSender[~~(playersNotSender.length * Math.random())].socket.emit('client.gotLines', lines);
     }
 
