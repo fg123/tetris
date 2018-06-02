@@ -10,6 +10,7 @@ class Game {
         this.name = undefined;
         this.inGame = false;
         this.hasJustSent = false;
+        this.shouldSettle = false;
     }
 
     hold() {
@@ -131,8 +132,13 @@ class Game {
 
     tick() {
         if (this.inGame) {
-            if (!this.down()) {
+            const movedDown = this.down();
+            if (!movedDown && this.shouldSettle) {
                 this.settle();
+            } else if (!movedDown) {
+                this.shouldSettle = true;
+            } else {
+                this.shouldSettle = false;
             }
             this.emitBoard();
         }
