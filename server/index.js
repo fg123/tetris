@@ -112,7 +112,7 @@ function removePlayerFromRoom(player) {
         delete rooms[room.id];
     } else {
         // Notify rest of players someone left (as if they lost)
-        rooms[data.room].onPlayerLose();
+        room.onPlayerLose();
         room.pushSpectatorState();
     }
 }
