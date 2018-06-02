@@ -17,7 +17,9 @@ function update() {
     const now = Date.now();
     DELTA_TIME = 1000 / (now - PREV_TIME);
     cumulativeCounter += now - PREV_TIME;
-    millisPast += now - PREV_TIME;
+    if (game.inGame) {
+        millisPast += now - PREV_TIME;
+    }
     if (cumulativeCounter > Math.max(200, TETRIS_FRAME_TIME - millisPast / 480)) {
         cumulativeCounter = 0;
         game.tick();

@@ -73,6 +73,7 @@ function setupSocket() {
         // TODO(anyone): Maybe have the server pass the upcoming array
         const upcoming = [];
         for (let i = 0; i < 1000; i++) upcoming.push(Math.floor(Math.random() * 7));
+        millisPast = 0;
         game.start(upcoming.shift(), upcoming);
     });
 
