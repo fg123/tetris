@@ -10,6 +10,7 @@ class Game {
         this.upcoming = [];
         this.name = undefined;
         this.inGame = false;
+        this.hasJustSent = false;
     }
 
     hold() {
@@ -28,6 +29,7 @@ class Game {
 
     resetBoard() {
         this.board = Array.from(Array(GAME_ROWS), () => Array.from(Array(GAME_COLS), () => 0));
+        this.hasJustSent = false;
     }
 
     resetPiece() {
@@ -70,6 +72,14 @@ class Game {
         // TODO(anyone): Probably not a good idea for the client to send this,
         // might want the server to validate based on the last received state
         // from the client
+        if (this.hasJustSent && rowsCleared === 1) {
+            rowsCleared += 1;
+        }
+        if (rowsCleared !== 0) {
+            this.hasJustSent = true;
+        } else {
+            this.hasJustSent = false;
+        }
         emit('server.linesCleared', { lines: rowsCleared });
         this.checkLosingCondition();
     }
@@ -91,6 +101,7 @@ class Game {
 
     lose() {
         this.inGame = false;
+        this.emitBoard();
         emit('server.lose');
     }
 
@@ -114,12 +125,16 @@ class Game {
         }
     }
 
+    emitBoard() {
+        emit('server.board', { board: this.getBoardStateWithCurrentPiece() });
+    }
+
     tick() {
         if (this.inGame) {
             if (!this.down()) {
                 this.settle();
             }
-            emit('server.board', { board: this.getBoardStateWithCurrentPiece() });
+            this.emitBoard();
         }
     }
 
