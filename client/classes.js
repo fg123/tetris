@@ -106,7 +106,7 @@ class Game {
 
     addLines(lines) {
         for (let i = 0; i < lines; i++) {
-            const newRow = Array.from(Array(GAME_COLS), () => 8);
+            const newRow = Array.from(Array(GAME_COLS), () => 10);
             newRow[~~(newRow.length * Math.random())] = 0;
             this.board.push(newRow);
             this.board.shift();
