@@ -86,6 +86,11 @@ function setupSocket() {
     socket.on('client.gotLines', function(lines) {
         game.addLines(lines);
     });
+
+    socket.on('disconnect', function() {
+        alert('Server disconnected.');
+        window.location.reload();
+    });
 }
 
 function log(message) {
