@@ -46,23 +46,37 @@ class Game {
         const piece = this.getCurrentPiece();
         const rotationalMatrix = piece.rotationalMatrix;
         const rotation = rotationalMatrix[this.rotation % rotationalMatrix.length];
+
+        const bombRowsToClear = new Set();
         for (let i = 0; i < 4; i++) {
             const block = piece.startPosition[i];
             // Apply Rotational and Transformational Offset
             const x = block[0] + rotation[i][0] + this.currentPieceXOffset;
             const y = block[1] + rotation[i][1] + this.currentPieceYOffset;
             // TODO(anyone): should probably assert the below somehow
-            //assert(this.board[y][x] == 0);
             // +1 because currentPiece is indexed on 0
             this.board[y][x] = this.currentPiece + 1;
+            if (y < GAME_ROWS - 1) {
+                if (this.board[y + 1][x] === 11) {
+                    // Clear bomb row
+                    bombRowsToClear.add(y + 1);
+                }
+            }
         }
         this.resetPiece();
         // TODO(anyone): Add check if no more upcoming
         this.currentPiece = this.upcoming.shift();
 
         let rowsCleared = 0;
+
+        bombRowsToClear.forEach(x => {
+            this.board.splice(x, 1);
+            this.board.unshift(Array.from(Array(GAME_COLS), () => 0));
+        });
+
         for (let row = GAME_ROWS - 1; row >= 0; row--) {
-            if (this.board[row].every(x => !this.isFreeBlock(x))) {
+            // Remove if no bomb and not free
+            if (this.board[row].every(x => !this.isFreeBlock(x) && x !== 11)) {
                 this.board.splice(row, 1);
                 this.board.unshift(Array.from(Array(GAME_COLS), () => 0));
                 // Shift pointer back down
@@ -119,7 +133,7 @@ class Game {
     addLines(lines) {
         for (let i = 0; i < lines; i++) {
             const newRow = Array.from(Array(GAME_COLS), () => 10);
-            newRow[~~(newRow.length * Math.random())] = 0;
+            newRow[~~(newRow.length * Math.random())] = 11;
             this.board.push(newRow);
             this.board.shift();
             this.checkLosingCondition();
