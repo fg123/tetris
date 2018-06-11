@@ -292,6 +292,15 @@ class Game {
             )
         ) {
             this.currentPieceYOffset -= 1;
+        } else if (
+            this.isValidState(
+                this.getCurrentPiece(),
+                this.currentPieceXOffset,
+                this.currentPieceYOffset + 1,
+                this.rotation + 1
+            )
+        ) {
+            this.currentPieceYOffset += 1;
         } else {
             return false;
         }
