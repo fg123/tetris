@@ -244,10 +244,42 @@ class Game {
                 this.rotation + 1
             )
         ) {
-            this.rotation += 1;
-            return true;
+            // Pass.
+        } else if (
+            /*
+		 * Try different options
+		 */
+            this.isValidState(
+                this.getCurrentPiece(),
+                this.currentPieceXOffset + 1,
+                this.currentPieceYOffset,
+                this.rotation + 1
+            )
+        ) {
+            this.currentPieceXOffset += 1;
+        } else if (
+            this.isValidState(
+                this.getCurrentPiece(),
+                this.currentPieceXOffset - 1,
+                this.currentPieceYOffset,
+                this.rotation + 1
+            )
+        ) {
+            this.currentPieceXOffset -= 1;
+        } else if (
+            this.isValidState(
+                this.getCurrentPiece(),
+                this.currentPieceXOffset,
+                this.currentPieceYOffset - 1,
+                this.rotation + 1
+            )
+        ) {
+            this.currentPieceYOffset -= 1;
+        } else {
+            return false;
         }
-        return false;
+        this.rotation += 1;
+        return true;
     }
 
     hardDrop() {
@@ -295,7 +327,12 @@ class Game {
             new Piece(
                 'I_BLOCK',
                 [[3, 1], [4, 1], [5, 1], [6, 1]],
-                [[[0, 0], [0, 0], [0, 0], [0, 0]], [[1, -1], [0, 0], [-1, 1], [-2, -2]]]
+                [
+                    [[0, 0], [0, 0], [0, 0], [0, 0]],
+                    [[2, -1], [1, 1], [0, 0], [-1, -2]],
+                    [[0, 1], [0, 1], [0, 1], [0, 1]],
+                    [[1, -1], [0, 0], [-1, 1], [-2, -2]]
+                ]
             ),
             new Piece(
                 'T_BLOCK',
@@ -330,12 +367,22 @@ class Game {
             new Piece(
                 'S_BLOCK',
                 [[3, 1], [4, 1], [4, 0], [5, 0]],
-                [[[0, 0], [0, 0], [0, 0], [0, 0]], [[0, 0], [0, 1], [0, 1], [-2, 0]]]
+                [
+                    [[0, 0], [0, 0], [0, 0], [0, 0]],
+                    [[2, 0], [0, 0], [0, 0], [0, 2]],
+                    [[0, 1], [0, 1], [0, 1], [0, 1]],
+                    [[0, 0], [0, 0], [0, 2], [-2, 0]]
+                ]
             ),
             new Piece(
                 'Z_BLOCK',
-                [[5, 1], [6, 1], [4, 0], [5, 0]],
-                [[[0, 0], [0, 0], [0, 0], [0, 0]], [[0, 1], [0, 0], [2, 0], [0, 1]]]
+                [[3, 0], [4, 0], [4, 1], [5, 1]],
+                [
+                    [[0, 0], [0, 0], [0, 0], [0, 0]],
+                    [[2, 0], [0, 2], [0, 0], [0, 0]],
+                    [[0, 1], [0, 1], [0, 1], [0, 1]],
+                    [[0, 2], [0, 0], [0, 0], [-2, 0]]
+                ]
             ),
             new Piece('O_BLOCK', [[4, 0], [4, 1], [5, 1], [5, 0]], [[[0, 0], [0, 0], [0, 0], [0, 0]]])
         ];
