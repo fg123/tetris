@@ -56,11 +56,10 @@ class Game {
             // TODO(anyone): should probably assert the below somehow
             // +1 because currentPiece is indexed on 0
             this.board[y][x] = this.currentPiece + 1;
-            if (y < GAME_ROWS - 1) {
-                if (this.board[y + 1][x] === 11) {
-                    // Clear bomb row
-                    bombRowsToClear.add(y + 1);
-                }
+            let bombRow = y + 1;
+            while (bombRow < GAME_ROWS && this.board[bombRow][x] === 11) {
+                bombRowsToClear.add(bombRow);
+                bombRow += 1;
             }
         }
         this.resetPiece();
@@ -236,6 +235,9 @@ class Game {
 
     rotate() {
         if (!this.inGame) return false;
+        // TODO(anyone): This function is incredibly terrible and any
+        // self-respecting software engineer would cry if they saw this.
+        // (but it works so...)
         if (
             this.isValidState(
                 this.getCurrentPiece(),
@@ -246,9 +248,6 @@ class Game {
         ) {
             // Pass.
         } else if (
-            /*
-		 * Try different options
-		 */
             this.isValidState(
                 this.getCurrentPiece(),
                 this.currentPieceXOffset + 1,
@@ -266,6 +265,24 @@ class Game {
             )
         ) {
             this.currentPieceXOffset -= 1;
+        } else if (
+            this.isValidState(
+                this.getCurrentPiece(),
+                this.currentPieceXOffset + 2,
+                this.currentPieceYOffset,
+                this.rotation + 1
+            )
+        ) {
+            this.currentPieceXOffset += 2;
+        } else if (
+            this.isValidState(
+                this.getCurrentPiece(),
+                this.currentPieceXOffset - 2,
+                this.currentPieceYOffset,
+                this.rotation + 1
+            )
+        ) {
+            this.currentPieceXOffset -= 2;
         } else if (
             this.isValidState(
                 this.getCurrentPiece(),
