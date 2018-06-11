@@ -70,9 +70,20 @@ function setupSocket() {
     });
 
     socket.on('client.startGame', function(data) {
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
         // TODO(anyone): Maybe have the server pass the upcoming array
+        const pieces = [0, 1, 2, 3, 4, 5, 6];
         const upcoming = [];
-        for (let i = 0; i < 1000; i++) upcoming.push(Math.floor(Math.random() * 7));
+        for (let i = 0; i < 150; i++) {
+            const shuffled = pieces.slice();
+            shuffleArray(shuffled);
+            Array.prototype.push.apply(upcoming, shuffled);
+        }
         millisPast = 0;
         game.start(upcoming.shift(), upcoming);
     });
