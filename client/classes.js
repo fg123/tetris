@@ -1,3 +1,5 @@
+const ACTION_SET_BUFFER = 200;
+
 class Game {
     constructor() {
         this.resetBoard();
@@ -5,12 +7,12 @@ class Game {
 
         this.resetPiece();
 
-        /* The client holds the next n (probably 5) pieces, each time a block is placed, the client sends a message to the server, who will give it the next upcoming piece(s) */
         this.upcoming = [];
         this.name = undefined;
         this.inGame = false;
         this.hasJustSent = false;
-        this.shouldSettle = false;
+        this.hasJustLanded = false;
+        this.lastAction = 0;
     }
 
     hold() {
@@ -30,6 +32,7 @@ class Game {
     resetBoard() {
         this.board = Array.from(Array(GAME_ROWS), () => Array.from(Array(GAME_COLS), () => 0));
         this.hasJustSent = false;
+        this.hasJustLanded = false;
         this.holdingPiece = undefined;
     }
 
@@ -38,6 +41,10 @@ class Game {
         this.currentPieceXOffset = 0;
         this.rotation = 0;
         this.hasHold = false;
+    }
+
+    setLastAction() {
+        this.lastAction = Date.now();
     }
 
     settle() {
@@ -146,12 +153,13 @@ class Game {
     tick() {
         if (this.inGame) {
             const movedDown = this.down();
-            if (!movedDown && this.shouldSettle) {
+            if (!movedDown && !this.hasJustLanded) {
+                this.hasJustLanded = true;
+                this.lastAction = Date.now();
+            } else if (!movedDown && Date.now() - this.lastAction > ACTION_SET_BUFFER) {
                 this.settle();
-            } else if (!movedDown) {
-                this.shouldSettle = true;
-            } else {
-                this.shouldSettle = false;
+            } else if (movedDown) {
+                this.hasJustLanded = false;
             }
             this.emitBoard();
         }
@@ -196,6 +204,7 @@ class Game {
             )
         ) {
             this.currentPieceXOffset -= 1;
+            this.setLastAction();
             return true;
         }
         return false;
@@ -212,6 +221,7 @@ class Game {
             )
         ) {
             this.currentPieceXOffset += 1;
+            this.setLastAction();
             return true;
         }
         return false;
@@ -305,6 +315,7 @@ class Game {
             return false;
         }
         this.rotation += 1;
+        this.setLastAction();
         return true;
     }
 
@@ -323,7 +334,7 @@ class Game {
     }
 
     updateUpcoming(newUpcoming) {
-        this.upcoming = this.upcoming.concat(newUpcoming);
+        this.upcoming = newUpcoming;
     }
 
     getUpcomingPiece() {
