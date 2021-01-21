@@ -15,7 +15,7 @@
     "dependencies": {
         "express": "^4.15.4",
         "nodemon": "^1.17.5",
-        "socket.io": "^2.0.3",
+        "socket.io": "^2.4.0",
         "uuid": "^3.2.1"
     },
     "license": "ISC",
